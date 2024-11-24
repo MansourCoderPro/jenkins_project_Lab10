@@ -7,38 +7,42 @@ pipeline {
         stage('Setup') {
             steps {
                 script {
-                    if (!fileExists("${env.WORKSPACE}\\${VIRTUAL_ENV}")) {
+                    if (!fileExists("${env.WORKSPACE}/${VIRTUAL_ENV}")) {
                         bat "python -m venv ${VIRTUAL_ENV}"
                     }
-                    bat "${VIRTUAL_ENV}\\Scripts\\activate && pip install -r requirements.txt"
+                    bat "venv\\Scripts\\activate && pip install -r requirements.txt"
                 }
             }
         }
         stage('Lint') {
             steps {
                 script {
-                    bat "${VIRTUAL_ENV}\\Scripts\\activate && flake8 app.py"
+                    bat "venv\\Scripts\\activate && flake8 app.py"
                 }
             }
         }
         stage('Test') {
             steps {
                 script {
-                    bat "${VIRTUAL_ENV}\\Scripts\\activate && pytest"
+                    bat "venv\\Scripts\\activate && pytest"
                 }
             }
         }
         stage('Coverage') {
             steps {
                 script {
-                    bat "${VIRTUAL_ENV}\\Scripts\\activate && coverage run -m pytest && coverage report"
+                    bat "venv\\Scripts\\activate && coverage run -m pytest && coverage report"
                 }
             }
         }
         stage('Security Scan') {
             steps {
                 script {
-                    bat "${VIRTUAL_ENV}\\Scripts\\activate && bandit -r ."
+                    bat """
+                    set PYTHONIOENCODING=utf-8 &&
+                    venv\\Scripts\\activate &&
+                    bandit -r . -f json -o bandit_report.json
+                    """
                 }
             }
         }
