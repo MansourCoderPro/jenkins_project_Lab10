@@ -39,8 +39,8 @@ pipeline {
             steps {
                 script {
                     bat """
-                    set PYTHONIOENCODING=utf-8 &&
-                    venv\\Scripts\\activate &&
+                    set PYTHONIOENCODING=utf-8
+                    venv\\Scripts\\activate
                     bandit -r . -f json -o bandit_report.json
                     """
                 }
